@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0d014bc8, #404399);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(270deg, #aeb0c2, #3b4990e0, #0a018ed6);
+      background-size: 600% 600%;
+      animation: gradientMove 9s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+    .app {
+      background: rgba(195, 194, 201, 0.277);
+      padding: 25px;
+      border-radius: 12px;
+      width: 330px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    .search-box button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #0e0013;
+      color: white;
+      cursor: pointer;
+    }
+
+    .search-box button:hover {
+      background: #3730a3;
+    }
+
+    .weather-card {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    .weather-card img {
+      width: 64px;
+    }
+ .glow-box {
+  padding: 20px 30px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.34);
+
+  box-shadow: 0 0 10px rgb(167, 127, 169);
+  animation: glowPulse infinite ease-in-out;
+}
+
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 5, 234, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(172, 149, 248, 0.903);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(217, 240, 117, 0.844);
+  }
+}
+
+
+  </style>
+</head>
+
+<body>
+
+
+  <div class="glow-box">
+    <h1>🌦 Weather App</h1>
+
+    <div class="search-box">
+      <input type="text" id="locationInput" placeholder="Enter city name" />
+      <button onclick="getWeather()">Search</button>
+    </div>
+
+    <div id="weatherResult" class="weather-card"></div>
+  </div>
+
+  <script>
+    const apiKey = "0eb25a8a4ab14a6c819144500260702";
+
+    function getWeather() {
+      const location = document.getElementById("locationInput").value.trim();
+      const resultDiv = document.getElementById("weatherResult");
+
+      if (location === "") {
+        resultDiv.innerHTML = "⚠️ Please enter a location";
+        return;
+      }
+
+      resultDiv.innerHTML = "⏳ Loading...";
+
+      const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=yes`;
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("City not found");
+          }
+          return response.json();
+        })
+        .then(data => {
+          const temp = data.current.temp_c;
+          const condition = data.current.condition.text;
+          const icon = data.current.condition.icon;
+
+          resultDiv.innerHTML = `
+            <h3>${data.location.name}, ${data.location.country}</h3>
+            <img src="https:${icon}" alt="weather icon">
+            <p><strong>Temperature:</strong> ${temp} °C</p>
+            <p><strong>Condition:</strong> ${condition}</p>
+          `;
+        })
+        .catch(() => {
+          resultDiv.innerHTML = "❌ Unable to fetch weather data";
+        });
+    }
+  </script>
+
+</body>
+</html>
